@@ -49,7 +49,7 @@ export default function Checkout() {
           source={{
             uri: product.image.startsWith("http")
               ? product.image
-              : require(product.image),
+              : "https://media.pichau.com.br/media/catalog/product/cache/2f958555330323e505eba7ce930bdf27/p/e/pes-bal-st2.jpg",
           }}
           style={styles.thumbnailImage}
           resizeMode="contain"

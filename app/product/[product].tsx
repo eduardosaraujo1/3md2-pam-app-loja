@@ -12,14 +12,12 @@ import {
 import productsData from "../../assets/products.json";
 
 export default function Product() {
-  const { product_id } = useLocalSearchParams();
+  const { product } = useLocalSearchParams();
   const router = useRouter();
 
-  const product = useMemo(() => {
+  const iproduct = useMemo(() => {
     // Handle the case when product_id could be string or string[]
-    const product_id_param = Array.isArray(product_id)
-      ? product_id[0]
-      : product_id;
+    const product_id_param = Array.isArray(product) ? product[0] : product;
 
     if (!product_id_param) return null;
 
@@ -31,17 +29,17 @@ export default function Product() {
     }
 
     return productsData[id];
-  }, [product_id]);
+  }, [product]);
 
   const handleBuy = () => {
     // Navigate to checkout page with product data
     router.push({
       pathname: "/checkout",
-      params: { product_id: product_id },
+      params: { product_id: product },
     });
   };
 
-  if (!product) {
+  if (!iproduct) {
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>Product not found</Text>
@@ -53,23 +51,23 @@ export default function Product() {
     <ScrollView style={styles.container}>
       <Image
         source={{
-          uri: product.image.startsWith("http")
-            ? product.image
+          uri: iproduct.image.startsWith("http")
+            ? iproduct.image
             : "https://media.pichau.com.br/media/catalog/product/cache/2f958555330323e505eba7ce930bdf27/p/e/pes-bal-st2.jpg",
         }}
         style={styles.productImage}
         resizeMode="contain"
       />
 
-      <Text style={styles.productName}>{product.name}</Text>
+      <Text style={styles.productName}>{iproduct.name}</Text>
 
       <View style={styles.priceContainer}>
         <Text style={styles.priceLabel}>Price:</Text>
-        <Text style={styles.priceValue}>R$ {product.price}</Text>
+        <Text style={styles.priceValue}>R$ {iproduct.price}</Text>
       </View>
 
       <Text style={styles.descriptionTitle}>Description</Text>
-      <Text style={styles.description}>{product.desc}</Text>
+      <Text style={styles.description}>{iproduct.desc}</Text>
 
       <TouchableOpacity style={styles.buyButton} onPress={handleBuy}>
         <Text style={styles.buyButtonText}>Buy Now</Text>
