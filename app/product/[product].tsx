@@ -11,6 +11,17 @@ import {
 } from "react-native";
 import productsData from "../../assets/products.json";
 
+function get_product_by_id(sid: string) {
+  const id = parseInt(sid, 10) - 1; // Convert to number and adjust for zero indexing
+
+  // Check if id is valid and within range
+  if (isNaN(id) || id < 0 || id >= productsData.length) {
+    return null;
+  }
+
+  return productsData[id];
+}
+
 export default function Product() {
   const { product } = useLocalSearchParams();
   const router = useRouter();
@@ -21,14 +32,7 @@ export default function Product() {
 
     if (!product_id_param) return null;
 
-    const id = parseInt(product_id_param, 10) - 1; // Convert to number and adjust for zero indexing
-
-    // Check if id is valid and within range
-    if (isNaN(id) || id < 0 || id >= productsData.length) {
-      return null;
-    }
-
-    return productsData[id];
+    return get_product_by_id(product_id_param);
   }, [product]);
 
   const handleBuy = () => {
@@ -124,7 +128,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   buyButton: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#d7376b",
     borderRadius: 8,
     padding: 16,
     alignItems: "center",

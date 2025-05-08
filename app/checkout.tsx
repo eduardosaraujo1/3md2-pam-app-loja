@@ -1,34 +1,35 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import React, { useMemo } from "react";
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import productsData from "../assets/products.json";
+
+// Only import WebView when not on web platform
+let WebView: any = null;
+if (Platform.OS !== "web") {
+  WebView = require("react-native-webview").default;
+}
+
+function maxlen(str: string, len: number) {
+  if (str.length > len) {
+    return str.substring(0, len) + "..."; // Truncate and add ellipsis if longer than len
+  } else {
+    return str; // Keep the original string if shorter or equal to len
+  }
+}
 
 export default function Checkout() {
   const { product_id } = useLocalSearchParams();
-  const router = useRouter();
-
   const product = useMemo(() => {
     // Handle the case when product_id could be string or string[]
     const product_id_param = Array.isArray(product_id)
       ? product_id[0]
       : product_id;
-
     if (!product_id_param) return null;
-
     const id = parseInt(product_id_param, 10) - 1; // Convert to number and adjust for zero indexing
-
     // Check if id is valid and within range
     if (isNaN(id) || id < 0 || id >= productsData.length) {
       return null;
     }
-
     return productsData[id];
   }, [product_id]);
 
@@ -40,63 +41,28 @@ export default function Checkout() {
     );
   }
 
+  const url = `https://landbot.online/v3/H-2921729-M8668NM4ITODATQ9/index.html?product_name=${maxlen(
+    product.name,
+    300
+  )}&product_price=R$${product.price}`;
+
+  // Render different components based on platform
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.pageTitle}>Checkout</Text>
-
-      <View style={styles.productSummary}>
-        <Image
-          source={{
-            uri: product.image.startsWith("http")
-              ? product.image
-              : "https://media.pichau.com.br/media/catalog/product/cache/2f958555330323e505eba7ce930bdf27/p/e/pes-bal-st2.jpg",
-          }}
-          style={styles.thumbnailImage}
-          resizeMode="contain"
-        />
-        <View style={styles.productInfo}>
-          <Text style={styles.productName} numberOfLines={2}>
-            {product.name}
-          </Text>
-          <Text style={styles.productPrice}>R$ {product.price}</Text>
-        </View>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Payment Information</Text>
-        {/* Mock payment form - in a real app, use a proper payment component */}
-        <Text style={styles.formLabel}>Payment Method</Text>
-        <View style={styles.paymentOption}>
-          <Text>Credit Card</Text>
-        </View>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Shipping Address</Text>
-        {/* Mock shipping form */}
-        <Text style={styles.formLabel}>Delivery Address</Text>
-        <View style={styles.addressBox}>
-          <Text>123 Example Street</Text>
-          <Text>City, State 12345</Text>
-        </View>
-      </View>
-
-      <View style={styles.totalSection}>
-        <Text style={styles.totalLabel}>Total:</Text>
-        <Text style={styles.totalPrice}>R$ {product.price}</Text>
-      </View>
-
-      <TouchableOpacity
-        style={styles.completeButton}
-        onPress={() => alert("Order placed successfully!")}
-      >
-        <Text style={styles.completeButtonText}>Complete Purchase</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backButtonText}>Back to Product</Text>
-      </TouchableOpacity>
-    </ScrollView>
+    <View style={styles.container}>
+      {Platform.OS === "web" ? (
+        // Use iframe for web
+        <div style={{ width: "100%", height: "100%" }}>
+          <iframe
+            src={url}
+            style={{ border: "none", width: "100%", height: "100%" }}
+            title="Checkout"
+          />
+        </div>
+      ) : (
+        // Use WebView for mobile platforms
+        <WebView source={{ uri: url }} />
+      )}
+    </View>
   );
 }
 

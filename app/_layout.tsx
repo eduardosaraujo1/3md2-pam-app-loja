@@ -16,6 +16,10 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen name="home" options={{ headerTitle: "Produtos" }} />
       <Stack.Screen
+        name="checkout"
+        options={{ headerTitle: "Finalizar Compra" }}
+      />
+      <Stack.Screen
         name="product/[product]"
         options={{ headerTitle: "Comprar produto" }}
       />
