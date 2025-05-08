@@ -1,16 +1,11 @@
+import { Link } from "expo-router";
 import { Text, View } from "react-native";
-import { WebView } from "react-native-webview";
 
 export default function Product() {
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <Text>Hello, world!</Text>
-      <WebView
-        style={{ flex: 1, margintTop: 64 }}
-        source={{
-          uri: "https://landbot.online/v3/H-2921729-M8668NM4ITODATQ9/index.html?product_name=camiseta&product_price=R$25,00",
-        }}
-      ></WebView>
+      <Link href="/product/2">Hello!</Link>
     </View>
   );
 }

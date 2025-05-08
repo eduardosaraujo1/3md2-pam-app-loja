@@ -1,13 +1,146 @@
-import { useLocalSearchParams } from "expo-router";
-import { Text, View } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useMemo } from "react";
+import {
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import productsData from "../../assets/products.json";
 
 export default function Product() {
   const { product_id } = useLocalSearchParams();
+  const router = useRouter();
+
+  const product = useMemo(() => {
+    // Handle the case when product_id could be string or string[]
+    const product_id_param = Array.isArray(product_id)
+      ? product_id[0]
+      : product_id;
+
+    if (!product_id_param) return null;
+
+    const id = parseInt(product_id_param, 10) - 1; // Convert to number and adjust for zero indexing
+
+    // Check if id is valid and within range
+    if (isNaN(id) || id < 0 || id >= productsData.length) {
+      return null;
+    }
+
+    return productsData[id];
+  }, [product_id]);
+
+  const handleBuy = () => {
+    // Navigate to checkout page with product data
+    router.push({
+      pathname: "/checkout",
+      params: { product_id: product_id },
+    });
+  };
+
+  if (!product) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>Product not found</Text>
+      </View>
+    );
+  }
 
   return (
-    <View>
-      <Text>Hello, world!</Text>
-      <Text>Product ID: {product_id}</Text>
-    </View>
+    <ScrollView style={styles.container}>
+      <Image
+        source={{
+          uri: product.image.startsWith("http")
+            ? product.image
+            : "https://media.pichau.com.br/media/catalog/product/cache/2f958555330323e505eba7ce930bdf27/p/e/pes-bal-st2.jpg",
+        }}
+        style={styles.productImage}
+        resizeMode="contain"
+      />
+
+      <Text style={styles.productName}>{product.name}</Text>
+
+      <View style={styles.priceContainer}>
+        <Text style={styles.priceLabel}>Price:</Text>
+        <Text style={styles.priceValue}>R$ {product.price}</Text>
+      </View>
+
+      <Text style={styles.descriptionTitle}>Description</Text>
+      <Text style={styles.description}>{product.desc}</Text>
+
+      <TouchableOpacity style={styles.buyButton} onPress={handleBuy}>
+        <Text style={styles.buyButtonText}>Buy Now</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
+
+const { width } = Dimensions.get("window");
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: "#fff",
+  },
+  productImage: {
+    width: width,
+    height: 300,
+    marginBottom: 16,
+    borderRadius: 8,
+  },
+  productName: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 12,
+    color: "#333",
+  },
+  priceContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  priceLabel: {
+    fontSize: 18,
+    color: "#666",
+    marginRight: 8,
+  },
+  priceValue: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#2e8b57",
+  },
+  descriptionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 8,
+    color: "#333",
+  },
+  description: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: "#555",
+    marginBottom: 24,
+  },
+  buyButton: {
+    backgroundColor: "#007bff",
+    borderRadius: 8,
+    padding: 16,
+    alignItems: "center",
+    marginBottom: 30,
+  },
+  buyButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  errorText: {
+    fontSize: 18,
+    color: "red",
+    textAlign: "center",
+    marginTop: 40,
+  },
+});
