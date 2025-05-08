@@ -23,6 +23,7 @@ export default function RootLayout() {
         name="product/[product]"
         options={{ headerTitle: "Comprar produto" }}
       />
+      <Stack.Screen name="+not-found" />
     </Stack>
   );
 }
