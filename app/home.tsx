@@ -14,27 +14,20 @@ import {
 } from "react-native";
 import productsData from "../assets/products.json";
 
-function maxlen(str: string, len: number) {
-  if (str.length > len) {
-    return str.substring(0, len) + "...";
-  } else {
-    return str;
-  }
-}
-
 export default function Product() {
   // Get screen width for responsive layout
   const screenWidth = Dimensions.get("window").width;
   // Number of columns in the grid
-  const numColumns = screenWidth > 600 ? 3 : 2;
-
+  const cardWidth = screenWidth > 600 ? 240 : "100%";
   // Function to render product card
   const renderProductCard = (product: any, index: number) => {
     return (
       <Link href={`/product/${index + 1}`} key={index} asChild>
-        <TouchableOpacity style={styles.card} activeOpacity={0.7}>
+        <TouchableOpacity
+          style={{ ...styles.card, width: cardWidth }}
+          activeOpacity={0.7}
+        >
           <View style={styles.imageContainer}>
-            {/* Use the URL directly from the JSON */}
             <Image
               source={{ uri: product.image }}
               style={styles.productImage}
@@ -108,7 +101,7 @@ const styles = StyleSheet.create({
   productGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
   },
   card: {
     backgroundColor: "#fff",
@@ -119,8 +112,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-    width: 240, // Further reduced to prevent overflow
-    marginBottom: 12, // Reduced bottom margin
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: "#eaeaea",
   },
@@ -134,7 +126,6 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     padding: 10,
-    height: 80, // Reduced height
     justifyContent: "space-between",
   },
   productName: {
