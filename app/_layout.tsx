@@ -14,8 +14,11 @@ export default function RootLayout() {
 
   return (
     <Stack>
-      <Stack.Screen name="home" options={{ headerShown: false }} />
-      <Stack.Screen name="product/[product]" options={{ headerShown: false }} />
+      <Stack.Screen name="home" options={{ headerTitle: "Produtos" }} />
+      <Stack.Screen
+        name="product/[product]"
+        options={{ headerTitle: "Comprar produto" }}
+      />
       <Stack.Screen name="+not-found" />
     </Stack>
   );
